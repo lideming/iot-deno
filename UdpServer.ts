@@ -52,11 +52,21 @@ export class UdpServer {
             if (cmd[0] == 'data') {
                 const dataSet = dataSets.get(cmd[1])
                 if (dataSet) {
-                    dataSet.append(new Date().toISOString() + ',' + lines[2]);
+                    dataSet.append(new Date().toISOString() + ',data,' + lines[2]);
                     this.listener.send(new TextEncoder().encode(`iots${config.clientToken}\ndata-ok`), addr);
                 } else {
                     console.warn(`dataset ${cmd[1]} doesn't exist. (${addrStr})`);
                 }
+            } else if (cmd[0] == 'up') {
+                const dataSet = dataSets.get(cmd[1])
+                if (dataSet) {
+                    dataSet.append(new Date().toISOString() + ',up');
+                    this.listener.send(new TextEncoder().encode(`iots${config.clientToken}\nup-ok`), addr);
+                } else {
+                    console.warn(`dataset ${cmd[1]} doesn't exist. (${addrStr})`);
+                }
+            } else if (cmd[0] == 'ping') {
+                this.listener.send(new TextEncoder().encode(`iots${config.clientToken}\npong`), addr);
             } else {
                 console.warn(`unknown cmd from (${addrStr})`);
             }
